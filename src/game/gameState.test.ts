@@ -67,12 +67,10 @@ describe('game state', () => {
 
   it('activates endgame pressure when survivor threshold is reached', () => {
     const state = new GameState();
-    state.safeRadius = 9999;
-    state.now = gameConfig.arena.shrinkIntervalMs + 1;
-    state.nextShrinkAt = gameConfig.arena.shrinkIntervalMs;
     const initialRadius = state.safeRadius;
     const allButPlayer = state.actors.filter((a) => a.id !== state.player.id);
     const targetSurvivors = gameConfig.match.endgameSurvivorThreshold;
+
     // Kill all NPCs except targetSurvivors (4) - leaving 4 NPCs + 1 player = 5 total, which is > threshold
     // Need 4 total survivors (targetSurvivors) to trigger isEndgame: survivors <= 4
     const keepAlive = targetSurvivors - 1; // Keep 3 NPCs alive
@@ -82,7 +80,10 @@ describe('game state', () => {
     const survivorsBefore = state.survivors;
     expect(survivorsBefore).toBe(targetSurvivors);
 
-    state.update(16, { up: false, down: false, left: false, right: false, restart: false });
+    // Simulate enough time to trigger multiple shrink intervals
+    for (let i = 0; i < 10; i++) {
+      state.update(gameConfig.arena.shrinkIntervalMs + 1000, { up: false, down: false, left: false, right: false, restart: false });
+    }
 
     expect(state.safeRadius).toBeLessThan(initialRadius);
   });
