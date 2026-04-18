@@ -64,4 +64,46 @@ describe('game state', () => {
     expect(inventory.blue).toBe(3);
     expect(getTotalBlades(inventory)).toBe(6);
   });
+
+  it('activates endgame pressure when survivor threshold is reached', () => {
+    const state = new GameState();
+    state.safeRadius = 9999;
+    state.now = gameConfig.arena.shrinkIntervalMs + 1;
+    state.nextShrinkAt = gameConfig.arena.shrinkIntervalMs;
+    const initialRadius = state.safeRadius;
+    const allButPlayer = state.actors.filter((a) => a.id !== state.player.id);
+    const targetSurvivors = gameConfig.match.endgameSurvivorThreshold;
+    for (let i = targetSurvivors; i < allButPlayer.length; i += 1) {
+      allButPlayer[i].alive = false;
+    }
+    const survivorsBefore = state.survivors;
+    expect(survivorsBefore).toBe(targetSurvivors + 1);
+
+    state.update(16, { up: false, down: false, left: false, right: false, restart: false });
+
+    expect(state.safeRadius).toBeLessThan(initialRadius);
+  });
+
+  it('activates endgame pressure when time threshold is reached', () => {
+    const state = new GameState();
+    state.safeRadius = 9999;
+    const initialRadius = state.safeRadius;
+    state.now = gameConfig.match.endgameTimeMs;
+
+    state.update(gameConfig.arena.shrinkIntervalMs + 1, { up: false, down: false, left: false, right: false, restart: false });
+
+    expect(state.safeRadius).toBeLessThan(initialRadius);
+  });
+
+  it('does not process gameplay events after match ends', () => {
+    const state = new GameState();
+    state.matchState = 'victory';
+    const initialPickupCount = state.pickups.length;
+    const initialPlayerX = state.player.position.x;
+
+    state.update(16, { up: false, down: false, left: false, right: true, restart: false });
+
+    expect(state.player.position.x).toBe(initialPlayerX);
+    expect(state.pickups.length).toBe(initialPickupCount);
+  });
 });
