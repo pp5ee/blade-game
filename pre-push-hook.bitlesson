@@ -1,0 +1,74 @@
+# BitLesson: Pre-push Hook Implementation
+
+## Description
+This lesson teaches how to create a git pre-push hook that prevents pushing uncommitted changes to a repository.
+
+## Learning Objectives
+- Understand git hooks and their purpose
+- Learn how to create a pre-push hook
+- Implement a script that checks for uncommitted changes
+- Understand how to make hooks executable
+
+## Prerequisites
+- Basic git knowledge
+- Familiarity with shell scripting
+
+## Content
+
+### What are Git Hooks?
+Git hooks are scripts that run automatically before or after certain git events. The pre-push hook runs before a `git push` operation.
+
+### Creating the Pre-push Hook
+
+1. **Hook Location**: Git hooks are stored in the `.git/hooks/` directory
+2. **File Name**: The pre-push hook should be named `pre-push` (no extension)
+3. **Executable**: The hook must be executable (`chmod +x .git/hooks/pre-push`)
+
+### The Pre-push Hook Script
+
+```bash
+#!/bin/bash
+
+# Check for uncommitted changes
+git diff-index --quiet HEAD --
+if [ $? -ne 0 ]; then
+    echo "Error: You have uncommitted changes!"
+    echo "Please commit or stash your changes before pushing."
+    echo ""
+    echo "To stash changes: git stash"
+    echo "To commit changes: git add . && git commit -m 'message'"
+    echo "To view changes: git status"
+    exit 1
+fi
+
+echo "✓ No uncommitted changes - push allowed"
+exit 0
+```
+
+### How It Works
+
+- `git diff-index --quiet HEAD --` checks if there are any differences between the working directory and the last commit
+- Exit code 0 means no changes, exit code 1 means changes exist
+- The script blocks the push if uncommitted changes are detected
+
+### Making the Hook Executable
+
+```bash
+chmod +x .git/hooks/pre-push
+```
+
+## Exercises
+
+1. Create the pre-push hook script
+2. Make it executable
+3. Test it by making a change and trying to push
+4. Verify it allows pushes when no changes exist
+
+## Common Issues
+
+- Hook not executable: Script won't run
+- Wrong file location: Must be in `.git/hooks/`
+- Incorrect file name: Must be exactly `pre-push`
+
+## BitLesson Delta
+add
