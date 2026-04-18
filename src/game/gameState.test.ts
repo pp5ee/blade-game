@@ -73,11 +73,14 @@ describe('game state', () => {
     const initialRadius = state.safeRadius;
     const allButPlayer = state.actors.filter((a) => a.id !== state.player.id);
     const targetSurvivors = gameConfig.match.endgameSurvivorThreshold;
-    for (let i = targetSurvivors; i < allButPlayer.length; i += 1) {
+    // Kill all NPCs except targetSurvivors (4) - leaving 4 NPCs + 1 player = 5 total, which is > threshold
+    // Need 4 total survivors (targetSurvivors) to trigger isEndgame: survivors <= 4
+    const keepAlive = targetSurvivors - 1; // Keep 3 NPCs alive
+    for (let i = keepAlive; i < allButPlayer.length; i += 1) {
       allButPlayer[i].alive = false;
     }
     const survivorsBefore = state.survivors;
-    expect(survivorsBefore).toBe(targetSurvivors + 1);
+    expect(survivorsBefore).toBe(targetSurvivors);
 
     state.update(16, { up: false, down: false, left: false, right: false, restart: false });
 
