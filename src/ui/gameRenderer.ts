@@ -103,8 +103,12 @@ export class GameRenderer {
     const viewHeight = this.app.screen.height;
     const targetX = viewWidth / 2 - player.x;
     const targetY = viewHeight / 2 - player.y;
-    this.world.position.x += (targetX - this.world.position.x) * gameConfig.arena.cameraLerp;
-    this.world.position.y += (targetY - this.world.position.y) * gameConfig.arena.cameraLerp;
+    const nextX = this.world.position.x + (targetX - this.world.position.x) * gameConfig.arena.cameraLerp;
+    const nextY = this.world.position.y + (targetY - this.world.position.y) * gameConfig.arena.cameraLerp;
+    const minX = Math.min(0, viewWidth - gameConfig.arena.width);
+    const minY = Math.min(0, viewHeight - gameConfig.arena.height);
+    this.world.position.x = Math.min(0, Math.max(minX, nextX));
+    this.world.position.y = Math.min(0, Math.max(minY, nextY));
   }
 
   private renderHud(state: GameState): void {

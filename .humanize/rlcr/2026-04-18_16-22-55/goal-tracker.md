@@ -94,17 +94,18 @@ Following TDD philosophy, each criterion includes positive and negative tests fo
 | Round | Change | Reason | Impact on AC |
 |-------|--------|--------|--------------|
 | 0 | Initial plan | - | - |
+| 1 | Implementation uses Vite + TypeScript + PixiJS instead of Phaser-oriented reference paths. | Valid allowed-stack choice; plan only recommended Phaser-style file locations and explicitly allowed TypeScript/Vite/HTML5 canvas rendering. | No AC scope change; implementation remains aligned with AC-1 through AC-7. |
 
 #### Active Tasks
 <!-- Map each task to its target Acceptance Criterion and routing tag -->
 | Task | Target AC | Status | Tag | Owner | Notes |
 |------|-----------|--------|-----|-------|-------|
-| task1 - Define the project scaffold, scene layout, and source tree for a TypeScript browser game from scratch. | AC-1, AC-7 | pending | analyze | codex | Establishes implementation structure before coding. |
-| task2 - Implement the initial app scaffold, arena scene, keyboard movement, and bounded camera behavior. | AC-1 | pending | coding | claude | Depends on task1. |
-| task3 - Specify the deterministic combat formula, tie-break examples, drop compression model, and tuning constants table. | AC-3, AC-7 | pending | analyze | codex | Depends on task1. |
+| task1 - Define the project scaffold, scene layout, and source tree for a TypeScript browser game from scratch. | AC-1, AC-7 | in_review | analyze | codex | Scaffold was effectively implemented, but final verification is blocked by the camera-bounds issue under AC-1. |
+| task2 - Implement the initial app scaffold, arena scene, keyboard movement, and bounded camera behavior. | AC-1 | in_review | coding | claude | App scaffold, arena scene, movement, and follow camera exist; bounded camera behavior is not fully satisfied yet. |
+| task3 - Specify the deterministic combat formula, tie-break examples, drop compression model, and tuning constants table. | AC-3, AC-7 | in_review | analyze | codex | Implemented in config/combat code, but analysis artifacts are not separately preserved in the repo. |
 | task4 - Implement blade inventory tracking, pickup consumption, orbit rendering, and compressed world drop bundles. | AC-2, AC-3 | pending | coding | claude | Depends on task2 and task3. |
 | task5 - Implement automatic combat resolution, defeat handling, survivor tracking, and restartable match flow. | AC-3, AC-5 | pending | coding | claude | Depends on task4. |
-| task6 - Specify NPC state thresholds and endgame convergence rules with concrete example scenarios. | AC-4, AC-5 | pending | analyze | codex | Depends on task3 and task5. |
+| task6 - Specify NPC state thresholds and endgame convergence rules with concrete example scenarios. | AC-4, AC-5 | in_review | analyze | codex | Thresholds are reflected in code, but endgame convergence still needs fuller deterministic verification coverage. |
 | task7 - Implement NPC loot/chase/flee/recover logic and the endgame pressure mechanic. | AC-4, AC-5 | pending | coding | claude | Depends on task6. |
 | task8 - Implement HUD, match-state presentation, and neon-styled procedural arena visuals informed by `uploads/blade.jpeg`. | AC-6 | pending | coding | claude | Depends on task5 and task7. |
 | task9 - Add deterministic logic tests and developer-facing configuration organization. | AC-3, AC-4, AC-5, AC-7 | pending | coding | claude | Depends on task7. |
@@ -114,6 +115,12 @@ Following TDD philosophy, each criterion includes positive and negative tests fo
 <!-- Only move tasks here after Codex verification -->
 | AC | Task | Completed Round | Verified Round | Evidence |
 |----|------|-----------------|----------------|----------|
+| AC-2, AC-3 | task4 - Implement blade inventory tracking, pickup consumption, orbit rendering, and compressed world drop bundles. | 1 | 1 | Implemented in `src/game/inventory.ts`, `src/game/combat.ts`, `src/game/gameState.ts`, and `src/ui/gameRenderer.ts`; verified by `npm test` and `npm run build`. |
+| AC-3, AC-5 | task5 - Implement automatic combat resolution, defeat handling, survivor tracking, and restartable match flow. | 1 | 1 | Implemented in `src/game/combat.ts` and `src/game/gameState.ts`; current victory/defeat flow and restart path pass `npm test` and `npm run build`. |
+| AC-4, AC-5 | task7 - Implement NPC loot/chase/flee/recover logic and the endgame pressure mechanic. | 1 | 1 | Implemented in `src/game/ai.ts` and `src/game/gameState.ts`; AI decision tests pass in `src/game/ai.test.ts`; endgame mechanic exists but see open issue for additional AC-5 verification. |
+| AC-6 | task8 - Implement HUD, match-state presentation, and neon-styled procedural arena visuals informed by `uploads/blade.jpeg`. | 1 | 1 | Implemented in `src/ui/gameRenderer.ts` and `src/styles/global.css`; builds successfully with `npm run build`. |
+| AC-3, AC-4, AC-5, AC-7 | task9 - Add deterministic logic tests and developer-facing configuration organization. | 1 | 1 | Added tests in `src/game/combat.test.ts`, `src/game/ai.test.ts`, `src/game/gameState.test.ts` and centralized config in `src/config/gameConfig.ts`; `npm test` passes. |
+| AC-7 | task10 - Write the root `README.md` with setup, usage, configuration, and structure documentation. | 1 | 1 | `README.md` added at repository root with install/run/build/test/config/structure sections; validated alongside passing build/test commands. |
 
 ### Explicitly Deferred
 <!-- Items here require strong justification -->
@@ -124,3 +131,5 @@ Following TDD philosophy, each criterion includes positive and negative tests fo
 <!-- Issues discovered during implementation -->
 | Issue | Discovered Round | Blocking AC | Resolution Path |
 |-------|-----------------|-------------|-----------------|
+| Follow camera is not clamped to arena extents, so the viewport can expose off-map space near edges. | 1 | AC-1 | Clamp camera translation in `src/ui/gameRenderer.ts` based on viewport size and arena size. |
+| Endgame convergence and finished-match freeze are under-tested relative to AC-5 deterministic verification requirements. | 1 | AC-5 | Add focused `GameState` tests for time/survivor-triggered safe-zone shrink and no gameplay progression after match end. |
