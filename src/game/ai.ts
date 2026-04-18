@@ -26,8 +26,15 @@ export function chooseNpcState(actor: Actor, actors: Actor[], pickups: Pickup[],
   }
 
   const crowdCount = nearbyEnemies.filter((candidate) => candidate.distance <= gameConfig.ai.crowdRange).length;
-  if (actor.recoverUntil > now || crowdCount >= 2) {
+
+  // Recover if actively recovering
+  if (actor.recoverUntil > now) {
     return 'recover';
+  }
+
+  // Being in a crowd triggers fleeing
+  if (crowdCount >= 2) {
+    return 'flee';
   }
 
   const chaseRatio = isEndgame(now, actors) ? gameConfig.ai.aggressionEndgameRatio : gameConfig.ai.chaseRatio;
