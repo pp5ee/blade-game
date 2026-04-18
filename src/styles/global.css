@@ -1,0 +1,45 @@
+html,
+body,
+#app {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: Inter, system-ui, sans-serif;
+  background: radial-gradient(circle at top, #0f1b34 0%, #050816 55%, #02040b 100%);
+  color: #f5fbff;
+}
+
+canvas {
+  display: block;
+}
+
+.hud {
+  position: fixed;
+  top: 18px;
+  left: 18px;
+  z-index: 5;
+  min-width: 240px;
+  padding: 16px 18px;
+  border: 1px solid rgba(88, 202, 255, 0.35);
+  border-radius: 16px;
+  background: rgba(4, 10, 24, 0.76);
+  box-shadow: 0 0 30px rgba(49, 169, 255, 0.18);
+  backdrop-filter: blur(10px);
+  line-height: 1.6;
+}
+
+.hud__title {
+  margin-bottom: 8px;
+  color: #78f0ff;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.hud__hint {
+  margin-top: 8px;
+  color: #b5c8e7;
+  font-size: 12px;
+}
